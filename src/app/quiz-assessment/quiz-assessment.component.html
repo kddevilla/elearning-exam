@@ -1,0 +1,27 @@
+<div class="q-content" [hidden]="evaluateScore">
+    <h2>Select an answer or fill the blank for each question:</h2><br>
+    <form [formGroup]="quizForm" (ngSubmit)="onSubmit()">
+        <div *ngFor="let qi of quizItems; let i = index">
+            <div class="qmultiple" *ngIf="qi.type == 'multiple'">
+                <h3>{{i+1}}. {{qi.question}}</h3>
+                <mat-radio-group formControlName="q{{i+1}}">
+                    <div class="q-radio-button" *ngFor="let qa of qi.answers">
+                        <mat-radio-button [value]="qa">
+                            {{qa}}
+                        </mat-radio-button><br>
+                    </div>
+                </mat-radio-group>
+            </div>
+            <div *ngIf="qi.type == 'fill'">
+                <h3>{{i+1}}. <span [innerHtml]="qi.question | safeHtml"></span></h3>
+            </div>
+            <br>
+        </div>
+        <br><br>
+        <button class="button" type="submit">Submit Answers</button>
+        <br><br><br><br><br>
+    </form>
+</div>
+<div *ngIf="evaluateScore" class="quiz-result-content">
+    <app-quiz-result score="{{quizResults}}" assessmentDetails="{{assessmentResultDetails}}"></app-quiz-result>
+</div>

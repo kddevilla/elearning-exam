@@ -1,0 +1,12 @@
+<mat-toolbar class="title-toolbar mat-elevation-z6"> 
+  <mat-toolbar-row>
+    <nav>
+      <a href="" class="title-center">ELearning</a> |
+      <a routerLink="/quiz" (click)="switch()">Quiz</a>
+    </nav>
+  </mat-toolbar-row> 
+</mat-toolbar>
+<router-outlet></router-outlet>
+<div *ngIf="showHome" class="welcome-page">
+  <h1>Welcome to Elearning System!</h1>
+</div>

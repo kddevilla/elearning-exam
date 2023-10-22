@@ -1,0 +1,24 @@
+<div style="width: 70%;">
+    <h2>Result: [{{score}}%] {{scoreEvaluation}}</h2>
+    <p>There are some mock learning courses that you can take to enhance your skills further.</p>
+    <p>Based on your score, you might want to take <b>{{courseRecommendation}}</b>.</p>
+    <p>You may click <a href="https://www.testandtrain.com/" target="_blank">here</a> and navigate through the site by clicking "Select level and Buy" and you should see the mock learning courses.</p>
+</div>
+<br>
+<div>
+    <label class="switch">
+        <input (click)="switch()" type="checkbox">
+        <span class="slider round"></span>
+    </label>
+    <p style="padding-top: 8px;">Show Exam Details</p>
+</div>
+<br>
+<div class="result-details" [hidden]="!toggleDetails">
+    <div *ngFor="let rm of resultModel; let i = index">
+        <h3>{{rm.question}}</h3>
+        <div class="answer-details">
+            <p>Your Answer: {{rm.answer}}</p>
+            <p>Correct Answer: {{rm.cAnswer}}</p>
+        </div>
+    </div>
+</div>

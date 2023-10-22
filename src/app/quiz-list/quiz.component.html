@@ -1,0 +1,8 @@
+<div class="container">
+    <div class="quiz-list" *ngFor="let qz of quizList">
+        <div class="quiz-instructions" *ngFor="let ins of qz.instructions">
+            <p>{{ins}}</p>
+        </div>
+        <button class="button" routerLink="/quiz-assessment">Take {{qz.subject}} Quiz</button>
+    </div>
+</div>
