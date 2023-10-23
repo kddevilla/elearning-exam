@@ -1,6 +1,10 @@
 import { Component, Renderer2, Pipe, PipeTransform, OnInit } from '@angular/core';
 import { DomSanitizer } from "@angular/platform-browser";
 import { FormControl, FormGroup } from '@angular/forms';
+import { Utilities } from '../utils/utility.service';
+import { environment } from "../../environments/environment";
+
+const quizUrl = environment.apiBaseUrl + environment.quizFunction.path;
 
 @Pipe({ name: "safeHtml" })
 export class SafeHtmlPipe implements PipeTransform {
@@ -19,7 +23,8 @@ export class SafeHtmlPipe implements PipeTransform {
 export class QuizAssessmentComponent implements OnInit {
 
   constructor(
-    private renderInput: Renderer2
+    private renderInput: Renderer2,
+    private utils: Utilities
   ) {}
 
   quizItems: any = [];
@@ -37,145 +42,16 @@ export class QuizAssessmentComponent implements OnInit {
   }
 
   setQuizItems(): void {
-    let qlist = {
-      subject: 'English',
-      qItems: [
-        {
-          type: 'multiple',
-          question: 'The order of a basic positive sentence is?',
-          answers: [
-            'Object-Verb-Subject',
-            'Verb-Object-Subject',
-            'Subject-Verb-Object',
-            'Subject-Object-Verb'
-          ],
-          cAnswer: 'Subject-Verb-Object'
-        },
-        {
-          type: 'fill',
-          question: 'The <input id="{id}" type="textbox"> is always included in a predicate of a sentence.',
-          cAnswer: 'verb'
-        },
-        {
-          type: 'multiple',
-          question: 'An independent clause contains?',
-          answers: [
-            'a verb and an object',
-            'a subject and a verb',
-            'a subject and an object',
-            'a noun and an object'
-          ],
-          cAnswer: 'a subject and a verb'
-        },
-        {
-          type: 'fill',
-          question: 'The <input id="{id}" type="textbox"> performs the verb\'s action.',
-          cAnswer: 'subject'
-        },
-        {
-          type: 'fill',
-          question: 'The <input id="{id}" type="textbox"> recieves the verb\'s action.',
-          cAnswer: 'object'
-        },
-        {
-          type: 'fill',
-          question: '"David writes the best songs." The direct object is <input id="{id}" type="textbox">.',
-          cAnswer: 'David'
-        },
-        {
-          type: 'fill',
-          question: 'It is a/an <input id="{id}" type="textbox"> verb if a verb\'s action is directed at a direct object.',
-          cAnswer: 'transitive'
-        },
-        {
-          type: 'fill',
-          question: 'Possessive is a value of the grammatical category called <input id="{id}" type="textbox">.',
-          cAnswer: 'case'
-        },
-        {
-          type: 'multiple',
-          question: 'We started ________ dinner without you.',
-          answers: [
-            'eating',
-            'to eat',
-            'to ate',
-            'eating/to eat'
-          ],
-          cAnswer: 'eating/to eat'
-        },
-        {
-          type: 'multiple',
-          question: 'My grandmother prefers ________ science fiction books.',
-          answers: [
-            'read',
-            'reading',
-            'to read',
-            'reading/to read'
-          ],
-          cAnswer: 'reading/to read'
-        },
-        {
-          type: 'multiple',
-          question: 'I can\'t imagine ________ my own house.',
-          answers: [
-            'buying',
-            'to buy',
-            'bought',
-            'buying/to buy'
-          ],
-          cAnswer: 'buying'
-        },
-        {
-          type: 'multiple',
-          question: 'I used ________ that television show all the time.',
-          answers: [
-            'watch',
-            'watching',
-            'to watch',
-            'watching/to watch'
-          ],
-          cAnswer: 'to watch'
-        },
-        {
-          type: 'multiple',
-          question: 'An adverb is a word that can modify',
-          answers: [
-            'verbs',
-            'adjective',
-            'adverb',
-            'verbs/adjective/adverb'
-          ],
-          cAnswer: 'verbs/adjective/adverb'
-        },
-        {
-          type: 'multiple',
-          question: 'An auxiliary verb is used with',
-          answers: [
-            'a proper noun',
-            'a main verb',
-            'an adjective',
-            'a pronoun'
-          ],
-          cAnswer: 'a main verb'
-        },
-        {
-          type: 'multiple',
-          question: 'A compound-complex sentence consists of',
-          answers: [
-            'one or more independent thoughts and one or more dependent clauses.',
-            'two or more independent clauses and one or more dependent clauses.',
-            'one or more independent clauses and two or more dependent clauses.',
-            'two or more independent thoughts and two or more dependent clauses.'
-          ],
-          cAnswer: 'two or more independent clauses and one or more dependent clauses.'
-        }
-      ]
-    };
-    
-    this.quizItems = this.randomizeQuestions(qlist.qItems);
-    
-    this.initFormHandler = true;
-    this.processQuizItems();
+    let getQuizItemsEndpoint = quizUrl + environment.quizFunction.actioncd.getquizitems;
+
+    this.utils.httpPostRequest(getQuizItemsEndpoint, {subject: 'English'}).subscribe({
+      next: (val: any) => {
+        this.quizItems = val.response as Array<any>;
+        this.initFormHandler = true;
+        this.processQuizItems();
+      },
+      error: (err: Error) => console.error('Observer got an error: ' + err)
+    });
   }
 
   processQuizItems(): void {
@@ -261,6 +137,7 @@ export class QuizAssessmentComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.quizForm.controls);
     this.setFormVal = true;
     this.processQuizItems();
 

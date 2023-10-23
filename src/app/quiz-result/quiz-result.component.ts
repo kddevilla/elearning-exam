@@ -1,4 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Utilities } from '../utils/utility.service';
+import { environment } from "../../environments/environment";
+
+const quizUrl = environment.apiBaseUrl + environment.quizFunction.path;
 
 @Component({
   selector: 'app-quiz-result',
@@ -17,12 +21,11 @@ export class QuizResultComponent implements OnInit {
   resultModel: Array<any> = [];
   toggleDetails: boolean = false;
 
-  constructor () {}
+  constructor (private utils: Utilities) {}
 
   ngOnInit(): void {
     this.quizRes = parseFloat(this.score);
     this.evaluateScore();
-    this.postQuizResults();
   }
 
   switch(): void {
@@ -43,38 +46,20 @@ export class QuizResultComponent implements OnInit {
         res: qResult.result == 'Correct'
       });
     });
-
-
   }
 
   evaluateScore(): void {
-    let scoreScale: Array<any> = [
-      {
-        score: 0,
-        scale: 'Low Score',
-        mRecomCourse: 'B2 First / C1 Advance'
-      },
-      {
-        score: 70,
-        scale: 'Average Score',
-        mRecomCourse: 'B2 First for Schools'
-      },
-      {
-        score: 85,
-        scale: 'High Score',
-        mRecomCourse: 'B1 Preliminary for Schools / A2 Key for Schools'
-      }
-    ];
+    let getScoreDetailsEndpoint = quizUrl + environment.quizFunction.actioncd.getscoredetails;
 
-    scoreScale.forEach((s: any, index: number) => {
-      if (index < (scoreScale.length - 1) && this.quizRes >= s.score && this.quizRes < scoreScale[index + 1].score) {
-        this.scoreEvaluation = s.scale;
-        this.courseRecommendation = s.mRecomCourse;
-      }
-      else if (index == (scoreScale.length - 1) && this.quizRes >= s.score) {
-        this.scoreEvaluation = s.scale;
-        this.courseRecommendation = s.mRecomCourse;
-      }
+    this.utils.httpPostRequest(getScoreDetailsEndpoint, {score: this.quizRes}).subscribe({
+      next: (val: any) => {
+        let res: any = val.response;
+        
+        this.scoreEvaluation = res.sEvaluation;
+        this.courseRecommendation = res.cRecommendation;
+      },
+      error: (err: Error) => console.error('Observer got an error: ' + err),
+      complete: () => this.postQuizResults()
     });
   }
 }

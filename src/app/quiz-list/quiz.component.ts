@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Utilities } from '../utils/utility.service';
+import { environment } from "../../environments/environment";
+
+const quizUrl = environment.apiBaseUrl + environment.quizFunction.path;
 
 @Component({
   selector: 'app-quiz',
@@ -8,21 +12,20 @@ import { Component, OnInit } from '@angular/core';
 export class QuizComponent implements OnInit {
   quizList: Array<any> = [];
 
-  constructor(){}
+  constructor(private utils: Utilities){}
 
   ngOnInit(): void {
     this.setQuizList();
   }
 
   setQuizList(): void {
-    this.quizList = [
-      {
-        subject: 'English',
-        instructions: [
-          'This quiz will determine how good you are at English Grammar.',
-          'The quiz is composed of random (fill-in-the-blanks / multiple-choice) questions about English Grammar.'
-        ]
-      }
-    ];
+    let getQuizEndpoint: string = quizUrl + environment.quizFunction.actioncd.getquiz;
+    
+    this.utils.httpPostRequest(getQuizEndpoint).subscribe({
+      next: (val: any) => {
+        this.quizList = val.response as Array<any>;
+      },
+      error: (err: Error) => console.error('Observer got an error: ' + err)
+    });
   }
 }
