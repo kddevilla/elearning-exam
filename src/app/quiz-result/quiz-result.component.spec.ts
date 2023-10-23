@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClient, HttpHandler } from '@angular/common/http';
+import { Utilities } from '../utils/utility.service';
 import { QuizResultComponent } from './quiz-result.component';
 
 describe('QuizResultComponent', () => {
@@ -8,7 +9,12 @@ describe('QuizResultComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [QuizResultComponent]
+      declarations: [QuizResultComponent],
+      providers: [
+        Utilities,
+        HttpClient,
+        HttpHandler
+      ]
     });
     fixture = TestBed.createComponent(QuizResultComponent);
     component = fixture.componentInstance;
